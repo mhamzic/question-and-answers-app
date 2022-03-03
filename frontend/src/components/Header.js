@@ -1,5 +1,5 @@
-import { FaSignInAlt, FaSignOutAlt, FaUser } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
+import { FaSignInAlt, FaPlus, FaUser } from "react-icons/fa";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, reset } from "../store/auth/authSlice";
 import { Navbar, Container, Dropdown, Nav, Button } from "react-bootstrap";
@@ -16,39 +16,10 @@ function Header() {
   };
 
   return (
-    // <div className="container">
-    //   <header>
-    //     <div>
-    //       <Link to="/">Questions App</Link>
-    //     </div>
-    //     <ul>
-    //       {user ? (
-    //         <li>
-    //           <button className="btn" onClick={onLogout}>
-    //             <FaSignOutAlt /> Logout
-    //           </button>
-    //         </li>
-    //       ) : (
-    //         <>
-    //           <li>
-    //             <Link to="/login">
-    //               <FaSignInAlt /> Login
-    //             </Link>
-    //           </li>
-    //           <li>
-    //             <Link to="/register">
-    //               <FaUser /> Register
-    //             </Link>
-    //           </li>
-    //         </>
-    //       )}
-    //     </ul>
-    //   </header>
-    // </div>
     <>
       <Navbar bg="light" variant="light" expand="lg" sticky="top">
         <Container>
-          <Navbar.Brand as={NavLink} to={user ? "/tournaments" : "/login"}>
+          <Navbar.Brand as={NavLink} to={user ? "/home" : "/login"}>
             <span className="fs-5">Questions App</span>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -68,28 +39,33 @@ function Header() {
               {user && (
                 <>
                   <Dropdown>
-                    <Dropdown.Toggle variant="info">
-                      <span className="me-1 text-white">{}</span>
+                    <Dropdown.Toggle variant="secondary">
+                      <span className="me-1">
+                        <FaUser />
+                      </span>
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      <Dropdown.Item as={NavLink} to="/mytournaments">
-                        My tournaments
+                      <Dropdown.Item as={NavLink} to="/myquestions">
+                        My questions
                       </Dropdown.Item>
                       <Dropdown.Item as={NavLink} to="/profile">
                         Profile
                       </Dropdown.Item>
+                      <Dropdown.Divider />
+                      <Dropdown.Item onClick={onLogout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </>
               )}
               {user && (
                 <Button
-                  variant="secondary"
+                  as={Link}
+                  to="/addquestion"
+                  variant="success"
                   // size="sm"
                   className="mx-4"
-                  onClick={onLogout}
                 >
-                  <FaSignOutAlt /> Logout
+                  <FaPlus /> Add Question
                 </Button>
               )}
             </Nav>

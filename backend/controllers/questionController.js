@@ -1,12 +1,22 @@
 const asyncHandler = require("express-async-handler");
 const db = require("../db/index");
 
-// @desc    Get user questions
+// @desc    Get all questions
 // @route   GET /api/questions
-// @access  Private
+// @access  Public
 const getQuestions = asyncHandler(async (req, res) => {
+  const qResult = await db.query("SELECT * FROM questions");
+  const questions = qResult.rows;
+
+  res.status(200).json(questions);
+});
+
+// @desc    Get all user questions
+// @route   GET /api/questions/:userId
+// @access  Private
+const getUserQuestions = asyncHandler(async (req, res) => {
   // Get user using the id in the JWT
-  const uResult = await db.query("SELECT * FROM users WHERE id = $1", [
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
     req.user.id,
   ]);
 
@@ -25,12 +35,12 @@ const getQuestions = asyncHandler(async (req, res) => {
   res.status(200).json(questions);
 });
 
-// @desc    Get user question
+// @desc    Get question
 // @route   GET /api/questions/:id
 // @access  Private
 const getQuestion = asyncHandler(async (req, res) => {
   // Get user using the id in the JWT
-  const uResult = await db.query("SELECT * FROM users WHERE id = $1", [
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
     req.user.id,
   ]);
   const user = uResult.rows[0];
@@ -40,21 +50,21 @@ const getQuestion = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  const qResult = await db.query("SELECT * FROM questions WHERE id=$1", [
-    req.params.id,
-  ]);
+  // const qResult = await db.query(
+  //   "SELECT * FROM questions WHERE question_id=$1",
+  //   [req.params.id]
+  // );
+  const qResult = await db.query(
+    "select question_id, users.user_id, text, likes, dislikes, questions.created_on, name from questions left join users on questions.user_id = users.user_id WHERE question_id=$1",
+    [req.params.id]
+  );
 
   const question = qResult.rows[0];
+  console.log(question);
 
   if (!question) {
     res.status(404);
     throw new Error("Question not found");
-  }
-
-  // Check if user is authorized
-  if (question.user_id.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error("Not Authorized");
   }
 
   res.status(200).json(question);
@@ -72,7 +82,7 @@ const createQuestion = asyncHandler(async (req, res) => {
   }
 
   // Get user using the id in the JWT
-  const uResult = await db.query("SELECT * FROM users WHERE id = $1", [
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
     req.user.id,
   ]);
   const user = uResult.rows[0];
@@ -97,7 +107,7 @@ const createQuestion = asyncHandler(async (req, res) => {
 // @access  Private
 const deleteQuestion = asyncHandler(async (req, res) => {
   // Get user using the id in the JWT
-  const uResult = await db.query("SELECT * FROM users WHERE id = $1", [
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
     req.user.id,
   ]);
   const user = uResult.rows[0];
@@ -108,9 +118,10 @@ const deleteQuestion = asyncHandler(async (req, res) => {
   }
 
   // Check if question exists
-  const qResult = await db.query("SELECT * FROM questions WHERE user_id=$1", [
-    req.params.id,
-  ]);
+  const qResult = await db.query(
+    "SELECT * FROM questions WHERE question_id=$1",
+    [req.params.id]
+  );
 
   const question = qResult.rows[0];
 
@@ -120,12 +131,12 @@ const deleteQuestion = asyncHandler(async (req, res) => {
   }
 
   // Check if user is authorized
-  if (question.user_id.toString() !== req.user.id) {
+  if (question.user_id.toString() !== req.user.id.toString()) {
     res.status(401);
     throw new Error("Not Authorized");
   }
 
-  const result = await db.query("DELETE FROM questions WHERE id=$1", [
+  const result = await db.query("DELETE FROM questions WHERE question_id=$1", [
     req.params.id,
   ]);
 
@@ -138,7 +149,7 @@ const deleteQuestion = asyncHandler(async (req, res) => {
 const updateQuestion = asyncHandler(async (req, res) => {
   const { text } = req.body;
   // Get user using the id in the JWT
-  const uResult = await db.query("SELECT * FROM users WHERE id = $1", [
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
     req.user.id,
   ]);
   const user = uResult.rows[0];
@@ -148,9 +159,10 @@ const updateQuestion = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  const qResult = await db.query("SELECT * FROM questions WHERE user_id=$1", [
-    req.params.id,
-  ]);
+  const qResult = await db.query(
+    "SELECT * FROM questions WHERE question_id=$1",
+    [req.params.id]
+  );
   const question = qResult.rows[0];
 
   if (!question) {
@@ -158,21 +170,17 @@ const updateQuestion = asyncHandler(async (req, res) => {
     throw new Error("Question not found");
   }
 
-  if (question.user_id.toString() !== req.user.id) {
+  if (question.user_id.toString() !== req.user.id.toString()) {
     res.status(401);
     throw new Error("Not Authorized");
   }
 
-  const result = await db.query(
-    "UPDATE questions SET text = $1 WHERE id = $2 returning *",
+  const qUpdated = await db.query(
+    "UPDATE questions SET text = $1 WHERE question_id = $2 returning *",
     [text, req.params.id]
   );
 
-  // const updatedQuestion = await Question.findByIdAndUpdate(
-  //   req.params.id,
-  //   req.body,
-  //   { new: true }
-  // );
+  const updatedQuestion = qUpdates.rows[0];
 
   res.status(200).json(updatedQuestion);
 });
@@ -182,7 +190,7 @@ const updateQuestion = asyncHandler(async (req, res) => {
 // @access  Private
 const setLike = asyncHandler(async (req, res) => {
   // Get user using the id in the JWT
-  const uResult = await db.query("SELECT * FROM users WHERE id = $1", [
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
     req.user.id,
   ]);
   const user = uResult.rows[0];
@@ -192,9 +200,10 @@ const setLike = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  const qResult = await db.query("SELECT * FROM questions WHERE id=$1", [
-    req.params.id,
-  ]);
+  const qResult = await db.query(
+    "SELECT * FROM questions WHERE question_id=$1",
+    [req.params.id]
+  );
   const question = qResult.rows[0];
 
   if (!question) {
@@ -202,26 +211,82 @@ const setLike = asyncHandler(async (req, res) => {
     throw new Error("Question not found");
   }
 
-  if (question.user_id.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error("Not Authorized");
-  }
-
   const result = await db.query(
-    "UPDATE questions SET likes = likes+1 WHERE id = $1 returning *",
+    "UPDATE questions SET likes = likes+1 WHERE question_id = $1 returning *",
     [req.params.id]
   );
-
-  // const updatedQuestion = await Question.findByIdAndUpdate(
-  //   req.params.id,
-  //   req.body,
-  //   { new: true }
-  // );
 
   res.status(200).json(result.rows[0]);
 });
 
-const setDislike = asyncHandler(async (req, res) => {});
+// @desc    Set dislike
+// @route   PATCH /api/questions/:id/like
+// @access  Private
+const setDislike = asyncHandler(async (req, res) => {
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
+    req.user.id,
+  ]);
+  const user = uResult.rows[0];
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  const qResult = await db.query(
+    "SELECT * FROM questions WHERE question_id=$1",
+    [req.params.id]
+  );
+  const question = qResult.rows[0];
+
+  if (!question) {
+    res.status(404);
+    throw new Error("Question not found");
+  }
+
+  const result = await db.query(
+    "UPDATE questions SET dislikes = dislikes+1 WHERE question_id = $1 returning *",
+    [req.params.id]
+  );
+
+  res.status(200).json(result.rows[0]);
+});
+
+// @desc    Get 20 questions ordered by creation date
+// @route   GET /api/questions/recent
+// @access  Private
+const getRecentQuestions = asyncHandler(async (req, res) => {
+  const { offset } = req.body || 0;
+  console.log(offset);
+
+  const qResult = await db.query(
+    "SELECT * FROM questions ORDER BY created_on DESC OFFSET $1 FETCH FIRST 5 ROW ONLY",
+    [offset]
+  );
+  const questions = qResult.rows;
+
+  if (questions.length === 0) return res.json([]);
+
+  res.status(200).json(questions);
+});
+
+// @desc    Get questions ordered by creation date
+// @route   GET /api/questions/hot
+// @access  Private
+const getHotQuestions = asyncHandler(async (req, res) => {
+  const { offset } = req.body || 0;
+  console.log(offset);
+
+  const qResult = await db.query(
+    "SELECT * FROM questions ORDER BY likes DESC OFFSET $1 FETCH FIRST 5 ROW ONLY",
+    [offset]
+  );
+  const questions = qResult.rows;
+
+  if (questions.length === 0) return res.json([]);
+
+  res.status(200).json(questions);
+});
 
 module.exports = {
   getQuestions,
@@ -229,6 +294,9 @@ module.exports = {
   createQuestion,
   deleteQuestion,
   updateQuestion,
+  getUserQuestions,
+  getRecentQuestions,
   setLike,
   setDislike,
+  getHotQuestions,
 };

@@ -4,6 +4,7 @@ const db = require("../db/index");
 
 const protect = asyncHandler(async (req, res, next) => {
   let token;
+  console.log(req.headers);
 
   if (
     req.headers.authorization &&
@@ -15,10 +16,10 @@ const protect = asyncHandler(async (req, res, next) => {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       // Get user from token and get user from DB based on user_id decoded from token
-      let results = await db.query("SELECT * FROM users WHERE id = $1", [
+      let results = await db.query("SELECT * FROM users WHERE user_id = $1", [
         decoded.id,
       ]);
-      req.user = results.rows[0];
+      req.user = { id: results.rows[0].user_id };
       next();
     } catch (error) {
       console.log(error);
