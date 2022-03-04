@@ -16,15 +16,13 @@ const createAnswer = async (answerData, token) => {
 };
 
 // Get all answers
-const getAllAnswers = async (token) => {
+const getAllAnswers = async (questionId, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
-
-  const response = await axios.get(API_URL, config);
-
+  const response = await axios.get(API_URL + "question/" + questionId, config);
   return response.data;
 };
 
@@ -35,9 +33,7 @@ const getUserAnswers = async (token) => {
       Authorization: `Bearer ${token}`,
     },
   };
-
   const response = await axios.get(API_URL + "user", config);
-
   return response.data;
 };
 
@@ -83,11 +79,7 @@ const setLike = async (answerId, token) => {
       Authorization: `Bearer ${token}`,
     },
   };
-  const response = await axios.patch(
-    API_URL + answerId + "/like/",
-    {},
-    config
-  );
+  const response = await axios.patch(API_URL + answerId + "/like/", {}, config);
   return response.data;
 };
 

@@ -16,6 +16,7 @@ const QuestionHotList = (props) => {
   useEffect(() => {
     return () => {
       if (isSuccess) {
+        console.log(isSuccess)
         dispatch(reset());
       }
     };

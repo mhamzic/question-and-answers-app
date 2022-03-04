@@ -17,6 +17,7 @@ app.use(morgan("tiny"));
 // Routes
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/questions", require("./routes/questionRoutes"));
+app.use("/api/answers", require("./routes/answerRoutes"));
 
 // Serve Frontend
 if (process.env.NODE_ENV === "production") {

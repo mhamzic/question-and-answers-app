@@ -4,7 +4,6 @@ const db = require("../db/index");
 
 const protect = asyncHandler(async (req, res, next) => {
   let token;
-  console.log(req.headers);
 
   if (
     req.headers.authorization &&

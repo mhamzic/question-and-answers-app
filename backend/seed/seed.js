@@ -17,29 +17,23 @@ const seed = async () => {
     await db.query("DROP TABLE IF EXISTS questions CASCADE");
     await db.query("DROP TABLE IF EXISTS answers CASCADE");
 
-    await db.query("CREATE TABLE users ()");
-    await db.query("CREATE TABLE questions ()");
-    await db.query("CREATE TABLE answers ()");
-
-    await db.query(`ALTER TABLE nekatabela
-        ADD COLUMN user_id INT GENERATED ALWAYS AS IDENTITY,
-        ADD COLUMN name VARCHAR (50) NOT NULL,
-        ADD COLUMN email VARCHAR (255) UNIQUE NOT NULL,
-        ADD COLUMN password VARCHAR (200) NOT NULL,
-        ADD COLUMN created_on TIMESTAMP NOT NULL DEFAULT Now(), 
-        PRIMARY KEY(user_id)`);
+    await db.query(`CREATE TABLE users (
+        user_id INT GENERATED ALWAYS AS IDENTITY,
+        name VARCHAR (50) NOT NULL,
+        email VARCHAR (255) UNIQUE NOT NULL,
+        password VARCHAR (200) NOT NULL,
+        created_on TIMESTAMP NOT NULL DEFAULT Now(), PRIMARY KEY(user_id)
+    )`);
 
     await db.query(`CREATE TABLE questions (
         question_id INT GENERATED ALWAYS AS IDENTITY,
         user_id INT,
-        answer_id INT,
         text VARCHAR (500),
         likes INT,
         dislikes INT,
         created_on TIMESTAMP NOT NULL DEFAULT Now(), 
         PRIMARY KEY(question_id),
-        FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-        FOREIGN KEY(answer_id) REFERENCES answers(answer_id) ON DELETE CASCADE
+        FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE
     )`);
 
     await db.query(`CREATE TABLE answers (
@@ -73,11 +67,10 @@ const seed = async () => {
       let randomUserId = Math.floor(Math.random() * 5) + 1;
       let randomAnswerId = Math.floor(Math.random() * 10) + 1;
       const result = await db.query(
-        "INSERT INTO questions (text, user_id, answer_id, likes, dislikes) VALUES ($1, $2, $3, $4, $5) returning *",
+        "INSERT INTO questions (text, user_id, likes, dislikes) VALUES ($1, $2, $3, $4) returning *",
         [
           question.text,
           randomUserId,
-          randomAnswerId,
           randomRatingLikes,
           randomRatingDislikes,
         ]

@@ -7,26 +7,17 @@ const db = require("../db/index");
 const getAnswers = asyncHandler(async (req, res) => {
   // Get user using the id in the JWT
   const { id } = req.user.id;
-  const results = await db.query(
-    "SELECT * FROM users WHERE id = $1 returning *",
-    [id]
+  // const aResult = await db.query("select * from answers WHERE question_id=$1", [
+  //   req.params.questionId,
+  // ]);
+
+  const aResult = await db.query(
+    "select answers.created_on, answers.text, users.name from answers LEFT JOIN users ON answers.user_id = users.user_id WHERE question_id=$1",
+    [req.params.questionId]
   );
-  const user = results.rows[0];
 
-  if (!user) {
-    res.status(401);
-    throw new Error("User not found");
-  }
-
-  const question = await Ticket.findById(req.params.questionId);
-
-  if (question.user.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error("User not authorized");
-  }
-
-  const answers = await Answer.find({ question: req.params.questionId });
-
+  const answers = aResult.rows;
+  console.log(aResult);
   res.status(200).json(answers);
 });
 

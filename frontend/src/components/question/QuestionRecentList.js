@@ -15,6 +15,7 @@ const QuestionList = (props) => {
 
   useEffect(() => {
     return () => {
+      console.log(isSuccess);
       if (isSuccess) {
         dispatch(reset());
       }

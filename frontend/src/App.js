@@ -10,6 +10,7 @@ import Question from "./pages/Question";
 import "./assets/css/bootstrap.min.css";
 
 import Register from "./pages/Register";
+import AddQuestion from "./pages/AddQuestion";
 
 function App() {
   return (
@@ -21,12 +22,13 @@ function App() {
             {/* public routes */}
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            {/* <Route path="/" element={<Home />} /> */}
+            <Route path="/" element={<Login />} />
 
             {/* protected routes */}
             <Route element={<PrivateRoute />}>
               <Route path="/home" element={<Home />} />
               <Route path="/question/:questionId" element={<Question />} />
+              <Route path="/addquestion" element={<AddQuestion />} />
             </Route>
 
             <Route

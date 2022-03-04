@@ -5,10 +5,23 @@ const db = require("../db/index");
 // @route   GET /api/questions
 // @access  Public
 const getQuestions = asyncHandler(async (req, res) => {
-  const qResult = await db.query("SELECT * FROM questions");
-  const questions = qResult.rows;
+  const { offset } = req.body || 0;
+  console.log(offset);
 
-  res.status(200).json(questions);
+  const recentResult = await db.query(
+    "SELECT * FROM questions ORDER BY created_on DESC OFFSET $1 FETCH FIRST 5 ROW ONLY",
+    [offset]
+  );
+  const hotResult = await db.query(
+    "SELECT * FROM questions ORDER BY likes DESC OFFSET FETCH FIRST 5 ROW ONLY",
+    [offset]
+  );
+  const recentQuestions = recentResult.rows;
+  const hotQuestions = hotResult.rows;
+
+  if (recentQuestions.length === 0 || hotQuestions.length) return res.json([]);
+
+  res.status(200).json({ recentQuestions, hotQuestions });
 });
 
 // @desc    Get all user questions
@@ -50,10 +63,6 @@ const getQuestion = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  // const qResult = await db.query(
-  //   "SELECT * FROM questions WHERE question_id=$1",
-  //   [req.params.id]
-  // );
   const qResult = await db.query(
     "select question_id, users.user_id, text, likes, dislikes, questions.created_on, name from questions left join users on questions.user_id = users.user_id WHERE question_id=$1",
     [req.params.id]
