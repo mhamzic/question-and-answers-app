@@ -4,40 +4,40 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
-import Spinner from "../components/Spinner/Spinner";
-import BackButton from "../components/BackButton";
-import {
-  createQuestion,
-  reset as resetSlice,
-} from "../store/question/questionSlice";
+import Spinner from "../Spinner/Spinner";
 
-const AddQuestion = (props) => {
+import {
+  createAnswer,
+  getAllAnswers,
+  reset as resetSlice,
+} from "../../store/answer/answerSlice";
+
+const AddAnswer = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.questions
+    (state) => state.answers
   );
 
   useEffect(() => {
     if (isError) {
       toast.error(message);
     }
-
-    dispatch(resetSlice());
   }, [dispatch, isError, isSuccess, navigate, message]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   const onSubmit = (data) => {
-    dispatch(createQuestion(data));
+    data.question_id = props.question_id;
     dispatch(resetSlice());
-    toast.info("Question added.");
-    navigate("/");
+    dispatch(createAnswer(data));
+    dispatch(getAllAnswers(props.question_id));
   };
 
   if (isLoading) {
@@ -45,16 +45,14 @@ const AddQuestion = (props) => {
   }
 
   return (
-    <Container className="w-50 my-5">
-      <h3>Please enter your question</h3>
-      <hr />
+    <>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group className="mb-3">
           <Form.Control
             as="textarea"
-            placeholder="Add your question..."
+            placeholder="Add your answer..."
             {...register("text", {
-              required: "Question is required.",
+              required: "Answer is required.",
             })}
             isInvalid={errors.text}
           />
@@ -70,8 +68,8 @@ const AddQuestion = (props) => {
           {/* <BackButton url="/home" /> */}
         </div>
       </Form>
-    </Container>
+    </>
   );
 };
 
-export default AddQuestion;
+export default AddAnswer;

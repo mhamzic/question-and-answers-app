@@ -3,7 +3,7 @@ const db = require("../db/index");
 
 // @desc    Get all questions
 // @route   GET /api/questions
-// @access  Public
+// @access  Private
 const getQuestions = asyncHandler(async (req, res) => {
   const { offset } = req.body || 0;
   console.log(offset);
@@ -13,13 +13,12 @@ const getQuestions = asyncHandler(async (req, res) => {
     [offset]
   );
   const hotResult = await db.query(
-    "SELECT * FROM questions ORDER BY likes DESC OFFSET FETCH FIRST 5 ROW ONLY",
-    [offset]
+    "SELECT * FROM questions ORDER BY likes DESC FETCH FIRST 5 ROW ONLY"
   );
   const recentQuestions = recentResult.rows;
   const hotQuestions = hotResult.rows;
 
-  if (recentQuestions.length === 0 || hotQuestions.length) return res.json([]);
+  // if (recentQuestions.length === 0 || hotQuestions.length) return res.json([]);
 
   res.status(200).json({ recentQuestions, hotQuestions });
 });
@@ -189,7 +188,7 @@ const updateQuestion = asyncHandler(async (req, res) => {
     [text, req.params.id]
   );
 
-  const updatedQuestion = qUpdates.rows[0];
+  const updatedQuestion = qUpdated.rows[0];
 
   res.status(200).json(updatedQuestion);
 });
@@ -279,16 +278,12 @@ const getRecentQuestions = asyncHandler(async (req, res) => {
   res.status(200).json(questions);
 });
 
-// @desc    Get questions ordered by creation date
+// @desc    Get questions ordered by likes count
 // @route   GET /api/questions/hot
 // @access  Private
 const getHotQuestions = asyncHandler(async (req, res) => {
-  const { offset } = req.body || 0;
-  console.log(offset);
-
   const qResult = await db.query(
-    "SELECT * FROM questions ORDER BY likes DESC OFFSET $1 FETCH FIRST 5 ROW ONLY",
-    [offset]
+    "SELECT * FROM questions ORDER BY likes DESC FETCH FIRST 5 ROW ONLY"
   );
   const questions = qResult.rows;
 

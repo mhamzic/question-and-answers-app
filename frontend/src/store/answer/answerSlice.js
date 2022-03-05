@@ -3,11 +3,11 @@ import answerService from "./answerService";
 
 const initialState = {
   answers: [],
+  topAnswers: [],
   answer: {},
   isError: false,
   isSuccess: false,
   isLoading: false,
-  isLoadMore: true,
   message: "",
 };
 
@@ -38,6 +38,26 @@ export const getAllAnswers = createAsyncThunk(
     try {
       const token = thunkAPI.getState().auth.user.token;
       return await answerService.getAllAnswers(questionId, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Get users with most answers
+export const getTopAnswers = createAsyncThunk(
+  "answers/getTopAnswers",
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await answerService.getTopAnswers(token);
     } catch (error) {
       const message =
         (error.response &&
@@ -130,7 +150,19 @@ export const answerSlice = createSlice({
       state.isError = true;
       state.message = action.payload;
     },
-
+    [getTopAnswers.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [getTopAnswers.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.topAnswers = action.payload;
+    },
+    [getTopAnswers.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = action.payload;
+    },
   },
 });
 

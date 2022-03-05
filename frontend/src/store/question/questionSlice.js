@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import questionService from "./questionService";
 
 const initialState = {
-  questions: [],
+  recentQuestions: [],
   hotQuestions: [],
   question: {},
   isError: false,
@@ -32,13 +32,54 @@ export const createQuestion = createAsyncThunk(
   }
 );
 
+// Update question
+export const updateQuestion = createAsyncThunk(
+  "questions/updateQuestion",
+  async (questionData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      console.log(questionData);
+      return await questionService.createQuestion(questionData, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Update question
+export const removeQuestion = createAsyncThunk(
+  "questions/removeQuestion",
+  async (questionId, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await questionService.removeQuestion(questionId, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 // Get all questions
 export const getAllQuestions = createAsyncThunk(
   "questions/getAll",
-  async (_, thunkAPI) => {
+  async (offset, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await questionService.getAllQuestions(token);
+      return await questionService.getAllQuestions(offset, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -97,8 +138,7 @@ export const getRecentQuestions = createAsyncThunk(
   "questions/getRecentQuestions",
   async (offset, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await questionService.getRecentQuestions(offset, token);
+      return await questionService.getRecentQuestions(offset);
     } catch (error) {
       const message =
         (error.response &&
@@ -115,30 +155,9 @@ export const getRecentQuestions = createAsyncThunk(
 // Get hot questions
 export const getHotQuestions = createAsyncThunk(
   "questions/getHotQuestions",
-  async (offset, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await questionService.getHotQuestions(offset, token);
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
-
-// Close question
-export const closeQuestion = createAsyncThunk(
-  "questions/close",
-  async (questionId, thunkAPI) => {
-    try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await questionService.closeQuestion(questionId, token);
+      return await questionService.getHotQuestions();
     } catch (error) {
       const message =
         (error.response &&
@@ -224,7 +243,8 @@ export const questionSlice = createSlice({
     [getAllQuestions.fulfilled]: (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      state.questions = action.payload;
+      state.recentQuestions = action.payload.recentQuestions;
+      state.hotQuestions = action.payload.hotQuestions;
     },
     [getAllQuestions.rejected]: (state, action) => {
       state.isLoading = false;
@@ -269,7 +289,7 @@ export const questionSlice = createSlice({
       if (action.payload.length < 5) {
         state.isLoadMore = false;
       }
-      action.payload.forEach((item) => state.questions.push(item));
+      action.payload.forEach((item) => state.recentQuestions.push(item));
     },
     [getRecentQuestions.rejected]: (state, action) => {
       state.isLoading = false;
@@ -283,10 +303,7 @@ export const questionSlice = createSlice({
     [getHotQuestions.fulfilled]: (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      if (action.payload.length < 5) {
-        state.isLoadMore = false;
-      }
-      action.payload.forEach((item) => state.hotQuestions.push(item));
+      state.hotQuestions = action.payload;
     },
     [getHotQuestions.rejected]: (state, action) => {
       state.isLoading = false;

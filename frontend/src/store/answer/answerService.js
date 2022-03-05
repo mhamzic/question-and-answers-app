@@ -26,6 +26,17 @@ const getAllAnswers = async (questionId, token) => {
   return response.data;
 };
 
+// Get top answers
+const getTopAnswers = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.get(API_URL + "topanswers/", config);
+  return response.data;
+};
+
 // Get user answers
 const getUserAnswers = async (token) => {
   const config = {
@@ -125,6 +136,7 @@ const answerService = {
   getHotAnswers,
   setLike,
   setDislike,
+  getTopAnswers,
 };
 
 export default answerService;

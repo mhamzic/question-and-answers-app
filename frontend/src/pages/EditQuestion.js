@@ -1,42 +1,50 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button, Form, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner/Spinner";
-import BackButton from "../components/BackButton";
 import {
-  createQuestion,
+  getQuestion,
   reset as resetSlice,
+  updateQuestion,
 } from "../store/question/questionSlice";
 
 const AddQuestion = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isLoading, isError, isSuccess, message } = useSelector(
+  const { questionId } = useParams();
+
+  const { question, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.questions
   );
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     if (isError) {
       toast.error(message);
     }
 
-    dispatch(resetSlice());
-  }, [dispatch, isError, isSuccess, navigate, message]);
+    dispatch(getQuestion(questionId));
+  }, [dispatch, isError, message, questionId]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  useEffect(() => {
+    reset(question);
+  }, [isSuccess, question, reset]);
 
   const onSubmit = (data) => {
-    dispatch(createQuestion(data));
+    let dataForUpdate = { questionId: data.question_id, text: data.text };
+    dispatch(updateQuestion(dataForUpdate));
     dispatch(resetSlice());
-    toast.info("Question added.");
+    toast.info("Question updated.");
     navigate("/");
   };
 
@@ -46,13 +54,12 @@ const AddQuestion = (props) => {
 
   return (
     <Container className="w-50 my-5">
-      <h3>Please enter your question</h3>
+      <h3>Edit your question</h3>
       <hr />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group className="mb-3">
           <Form.Control
             as="textarea"
-            placeholder="Add your question..."
             {...register("text", {
               required: "Question is required.",
             })}

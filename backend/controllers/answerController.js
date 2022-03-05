@@ -12,12 +12,12 @@ const getAnswers = asyncHandler(async (req, res) => {
   // ]);
 
   const aResult = await db.query(
-    "select answers.created_on, answers.text, users.name from answers LEFT JOIN users ON answers.user_id = users.user_id WHERE question_id=$1",
+    "select answers.created_on, answers.text, users.name, answers.user_id, answers.answer_id from answers LEFT JOIN users ON answers.user_id = users.user_id WHERE question_id=$1",
     [req.params.questionId]
   );
 
   const answers = aResult.rows;
-  console.log(aResult);
+  // console.log(aResult);
   res.status(200).json(answers);
 });
 
@@ -25,32 +25,107 @@ const getAnswers = asyncHandler(async (req, res) => {
 // @route   POST /api/questions/:questionId/answers
 // @access  Private
 const addAnswer = asyncHandler(async (req, res) => {
-  // Get user using the id in the JWT
-  const user = await User.findById(req.user.id);
+  const { text, question_id } = req.body;
+
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
+    req.user.id,
+  ]);
+
+  const user = uResult.rows[0];
 
   if (!user) {
     res.status(401);
     throw new Error("User not found");
   }
 
-  const question = await Ticket.findById(req.params.questionId);
+  const answerResult = await db.query(
+    "INSERT INTO answers (text, user_id, question_id) VALUES ($1, $2, $3) returning *",
+    [text, req.user.id, question_id]
+  );
 
-  if (question.user.toString() !== req.user.id) {
-    res.status(401);
-    throw new Error("User not authorized");
-  }
-
-  const answer = await Answer.create({
-    text: req.body.text,
-    isStaff: false,
-    question: req.params.questionId,
-    user: req.user.id,
-  });
+  const answer = answerResult.rows[0];
 
   res.status(200).json(answer);
+});
+
+// return users with most answers, limited to top 5
+const getTopAnswers = asyncHandler(async (req, res) => {
+  const answerResult = await db.query(
+    "select answers.user_id, name, count(answers.user_id) from answers left join users on answers.user_id=users.user_id group by answers.user_id, name order by count desc limit 5"
+  );
+  const answers = answerResult.rows;
+  res.status(200).json(answers);
+});
+
+// @desc    Set like
+// @route   PATCH /api/answers/:id/like
+// @access  Private
+const setLike = asyncHandler(async (req, res) => {
+  // Get user using the id in the JWT
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
+    req.user.id,
+  ]);
+  const user = uResult.rows[0];
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  const qResult = await db.query("SELECT * FROM answers WHERE answer_id=$1", [
+    req.params.id,
+  ]);
+  const answer = qResult.rows[0];
+
+  if (!answer) {
+    res.status(404);
+    throw new Error("Answer not found");
+  }
+
+  const result = await db.query(
+    "UPDATE answers SET likes = likes+1 WHERE answer_id = $1 returning *",
+    [req.params.id]
+  );
+
+  res.status(200).json(result.rows[0]);
+});
+
+// @desc    Set dislike
+// @route   PATCH /api/answers/:id/like
+// @access  Private
+const setDislike = asyncHandler(async (req, res) => {
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
+    req.user.id,
+  ]);
+  const user = uResult.rows[0];
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  const qResult = await db.query("SELECT * FROM answers WHERE answer=$1", [
+    req.params.id,
+  ]);
+  const answer = qResult.rows[0];
+
+  if (!answer) {
+    res.status(404);
+    throw new Error("Question not found");
+  }
+
+  const result = await db.query(
+    "UPDATE answers SET dislikes = dislikes+1 WHERE question_id = $1 returning *",
+    [req.params.id]
+  );
+
+  res.status(200).json(result.rows[0]);
 });
 
 module.exports = {
   getAnswers,
   addAnswer,
+  getTopAnswers,
+  setLike,
+  setDislike,
 };

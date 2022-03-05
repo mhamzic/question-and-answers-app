@@ -22,8 +22,8 @@ router.use("/:questionId/notes", answerRouter);
 router.route("/").get(protect, getQuestions).post(protect, createQuestion);
 
 router.route("/user").get(protect, getUserQuestions);
-router.route("/recent").post(protect, getRecentQuestions);
-router.route("/hot").post(protect, getHotQuestions);
+router.route("/recent").post(getRecentQuestions);
+router.route("/hot").get(getHotQuestions);
 
 router.route("/:id/like").patch(protect, setLike);
 router.route("/:id/dislike").patch(protect, setDislike);

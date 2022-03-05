@@ -15,8 +15,23 @@ const createQuestion = async (questionData, token) => {
   return response.data;
 };
 
+// Update question
+const updateQuestion = async (questionData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.put(
+    API_URL + questionData.questionId,
+    questionData.text,
+    config
+  );
+  return response.data;
+};
+
 // Get all questions
-const getAllQuestions = async (token) => {
+const getAllQuestions = async (offset, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -54,25 +69,26 @@ const getQuestion = async (questionId, token) => {
   return response.data;
 };
 
-// Get recent question
-const getRecentQuestions = async (offset, token) => {
+// Remove user question
+const removeQuestion = async (questionId, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
-  const response = await axios.post(API_URL + "recent", offset, config);
+  const response = await axios.delete(API_URL + questionId, config);
+  return response.data;
+};
+
+// Get recent question
+const getRecentQuestions = async (offset) => {
+  const response = await axios.post(API_URL + "recent", offset);
   return response.data;
 };
 
 // Get hot question
-const getHotQuestions = async (offset, token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  const response = await axios.post(API_URL + "hot", offset, config);
+const getHotQuestions = async () => {
+  const response = await axios.get(API_URL + "hot");
   return response.data;
 };
 
@@ -106,29 +122,12 @@ const setDislike = async (questionId, token) => {
   return response.data;
 };
 
-// Close question
-const closeQuestion = async (questionId, token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  const response = await axios.put(
-    API_URL + questionId,
-    { status: "closed" },
-    config
-  );
-
-  return response.data;
-};
-
 const questionService = {
   createQuestion,
   getAllQuestions,
   getUserQuestions,
   getQuestion,
-  closeQuestion,
+  removeQuestion,
   getRecentQuestions,
   getHotQuestions,
   setLike,

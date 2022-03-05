@@ -19,7 +19,7 @@ function Header() {
     <>
       <Navbar bg="light" variant="light" expand="lg" sticky="top">
         <Container>
-          <Navbar.Brand as={NavLink} to={user ? "/home" : "/login"}>
+          <Navbar.Brand as={NavLink} to={"/"}>
             <span className="fs-5">Questions App</span>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />

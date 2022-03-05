@@ -8,6 +8,9 @@ import {
   setLikes,
   setDislikes,
   setDislike,
+  removeQuestion,
+  getAllQuestions,
+  reset,
 } from "../store/question/questionSlice";
 import { getAllAnswers } from "../store/answer/answerSlice";
 import { useParams, useNavigate } from "react-router-dom";
@@ -17,6 +20,7 @@ import { Button } from "react-bootstrap";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 import AnswerItem from "../components/answer/AnswerItem";
+import AddAnswer from "../components/answer/AddAnswer";
 
 function Question() {
   const { question, isLoading, isSuccess, isError, message } = useSelector(
@@ -27,8 +31,10 @@ function Question() {
     (state) => state.answers
   );
 
+  console.log(answers);
+
   const { token } = useSelector((state) => state.auth.user);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [answerFormIsOpen, setAnswerFormIsOpen] = useState(false);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -47,16 +53,8 @@ function Question() {
     // eslint-disable-next-line
   }, [isError, message, questionId]);
 
-  // Create answer
-  const onAnswerSubmit = (e) => {
-    e.preventDefault();
-    // dispatch(createNote({ noteText, ticketId }));
-    closeModal();
-  };
-
-  // Open/close modal
-  const openModal = () => setModalIsOpen(true);
-  const closeModal = () => setModalIsOpen(false);
+  // Open/close answer form
+  const openAnswerForm = () => setAnswerFormIsOpen(!answerFormIsOpen);
 
   if (isLoading || answerIsLoading) {
     return <Spinner />;
@@ -65,7 +63,7 @@ function Question() {
   if (isError) {
     return (
       <div className="container my-4">
-        <h3>Something Went Wrong</h3>);
+        <h3>Something Went Wrong</h3>
       </div>
     );
   }
@@ -80,10 +78,18 @@ function Question() {
     dispatch(setDislikes());
   };
 
+  const onDelete = () => {
+    dispatch(removeQuestion(questionId));
+    dispatch(getAllQuestions());
+    toast.info("Question removed successfully.");
+    dispatch(reset());
+    navigate("/");
+  };
+
   return (
     <div className="container my-5">
       <header>
-        <BackButton url="/home" />
+        <BackButton url="/" />
         <h3 className="mt-4">Question ID: {question.question_id}</h3>
         <h6>
           Date Submitted: {new Date(question.created_on).toLocaleString()}
@@ -116,10 +122,15 @@ function Question() {
             {userId === question.user_id && (
               <div>
                 <span className="me-2 text-danger">
-                  <Button size="sm">Edit</Button>
+                  <Button
+                    size="sm"
+                    onClick={() => navigate(`/editquestion/${questionId}`)}
+                  >
+                    Edit
+                  </Button>
                 </span>
                 <span className="text-danger">
-                  <Button variant="danger" size="sm">
+                  <Button variant="danger" size="sm" onClick={onDelete}>
                     Delete
                   </Button>
                 </span>
@@ -131,17 +142,14 @@ function Question() {
 
       <h5>Answers</h5>
 
-      <Button onClick={openModal} variant="secondary" className="my-2">
-        <FaPlus /> Add Answer
+      <Button onClick={openAnswerForm} variant="secondary" className="my-2">
+        {!answerFormIsOpen ? "Add Answer" : "Close"}
       </Button>
+      {answerFormIsOpen && <AddAnswer question_id={question.question_id} />}
 
-      {answers.length > 0 ? (
-        answers.map((answer) => (
-          <AnswerItem key={answer.answer_id} answer={answer} />
-        ))
-      ) : (
-        <h6 className="mt-4">Not yet answered.</h6>
-      )}
+      {answers.map((answer, i) => (
+        <AnswerItem key={answer.answer_id} answer={answer} userId={userId} />
+      ))}
     </div>
   );
 }

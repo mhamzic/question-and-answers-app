@@ -29,8 +29,8 @@ const seed = async () => {
         question_id INT GENERATED ALWAYS AS IDENTITY,
         user_id INT,
         text VARCHAR (500),
-        likes INT,
-        dislikes INT,
+        likes INT DEFAULT 0,
+        dislikes INT DEFAULT 0,
         created_on TIMESTAMP NOT NULL DEFAULT Now(), 
         PRIMARY KEY(question_id),
         FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE
@@ -41,8 +41,8 @@ const seed = async () => {
         user_id INT,
         question_id INT,
         text VARCHAR (500),
-        likes INT,
-        dislikes INT,
+        likes INT DEFAULT 0,
+        dislikes INT DEFAULT 0,
         created_on TIMESTAMP NOT NULL DEFAULT Now(), 
         PRIMARY KEY(answer_id),
         FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE, 
@@ -68,12 +68,7 @@ const seed = async () => {
       let randomAnswerId = Math.floor(Math.random() * 10) + 1;
       const result = await db.query(
         "INSERT INTO questions (text, user_id, likes, dislikes) VALUES ($1, $2, $3, $4) returning *",
-        [
-          question.text,
-          randomUserId,
-          randomRatingLikes,
-          randomRatingDislikes,
-        ]
+        [question.text, randomUserId, randomRatingLikes, randomRatingDislikes]
       );
     }
 
