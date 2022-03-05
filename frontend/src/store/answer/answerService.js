@@ -27,13 +27,8 @@ const getAllAnswers = async (questionId, token) => {
 };
 
 // Get top answers
-const getTopAnswers = async (token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  const response = await axios.get(API_URL + "topanswers/", config);
+const getTopAnswers = async () => {
+  const response = await axios.get(API_URL + "topanswers/");
   return response.data;
 };
 
@@ -48,7 +43,7 @@ const getUserAnswers = async (token) => {
   return response.data;
 };
 
-// Get user answer
+// Get single answer
 const getAnswer = async (answerId, token) => {
   const config = {
     headers: {
@@ -57,7 +52,29 @@ const getAnswer = async (answerId, token) => {
   };
 
   const response = await axios.get(API_URL + answerId, config);
+  return response.data;
+};
 
+// Update answer
+const updateAnswer = async (answerData, token) => {
+  const { text, answerId } = answerData;
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.put(API_URL + answerId, { text }, config);
+  return response.data;
+};
+
+// Remove answer
+const removeAnswer = async (answerId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.delete(API_URL + answerId, config);
   return response.data;
 };
 
@@ -137,6 +154,8 @@ const answerService = {
   setLike,
   setDislike,
   getTopAnswers,
+  updateAnswer,
+  removeAnswer,
 };
 
 export default answerService;

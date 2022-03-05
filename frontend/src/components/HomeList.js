@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import Spinner from "../Spinner/Spinner";
+import Spinner from "./Spinner/Spinner";
 import {
   getHotQuestions,
   getRecentQuestions,
   reset,
-} from "../../store/question/questionSlice";
-import QuestionItem from "./QuestionItem";
+} from "../store/question/questionSlice";
+import QuestionItem from "./question/QuestionItem";
 import { Button, Row, Col, Table } from "react-bootstrap";
-import { getTopAnswers } from "../../store/answer/answerSlice";
+import { getTopAnswers } from "../store/answer/answerSlice";
 
 const QuestionList = (props) => {
   const { hotQuestions, recentQuestions, isSuccess, isLoading, isLoadMore } =
@@ -58,37 +58,40 @@ const QuestionList = (props) => {
           </Button>
         </div>
       </Col>
-      <Col sm={12} md={5} className="bg-light">
-        <h5 className="my-4">Top 5 Questions</h5>
-        {hotQuestions.map((question) => (
-          <QuestionItem
-            key={question.question_id}
-            question={question}
-            hot={true}
-          />
-        ))}
-        <div></div>
-        <h5 className="my-4">Users With Most Answers</h5>
-        <Table striped hover size="sm">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Total answers</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topAnswers.map((user, i) => (
-              <tr key={i}>
-                <td>{i + 1}</td>
-                <td>
-                  <h6>{user.name}</h6>
-                </td>
-                <td>{user.count}</td>
+      <Col sm={12} md={5}>
+        <div className="m-2 p-2 bg-light">
+          <h5 className="my-4">Top 5 Questions</h5>
+          {hotQuestions.map((question) => (
+            <QuestionItem
+              key={question.question_id}
+              question={question}
+              hot={true}
+            />
+          ))}
+        </div>
+        <div>
+          <h5 className="my-4">Users With Most Answers</h5>
+          <Table striped hover size="sm">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Total answers</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {topAnswers.map((user, i) => (
+                <tr key={i}>
+                  <td>{i + 1}</td>
+                  <td>
+                    <h6>{user.name}</h6>
+                  </td>
+                  <td>{user.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       </Col>
     </Row>
   );

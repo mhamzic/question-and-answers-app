@@ -80,11 +80,16 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route   /api/users/me
 // @access  Private
 const getMe = asyncHandler(async (req, res) => {
-  const user = {
-    id: req.user._id,
-    email: req.user.email,
-    name: req.user.name,
-  };
+  const result = await db.query(
+    "SELECT name, email FROM users WHERE user_id = $1",
+    [req.user.id]
+  );
+  const user = result.rows[0];
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
   res.status(200).json(user);
 });
 

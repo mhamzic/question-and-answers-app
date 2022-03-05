@@ -6,6 +6,9 @@ const {
   getTopAnswers,
   setLike,
   setDislike,
+  getAnswer,
+  updateAnswer,
+  removeAnswer,
 } = require("../controllers/answerController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -16,5 +19,10 @@ router.route("/:id/dislike").patch(protect, setDislike);
 router.route("/").get(protect, getAnswers).post(protect, addAnswer);
 router.route("/topanswers").get(getTopAnswers);
 router.route("/question/:questionId").get(protect, getAnswers);
+router
+  .route("/:id")
+  .get(protect, getAnswer)
+  .put(protect, updateAnswer)
+  .delete(protect, removeAnswer);
 
 module.exports = router;

@@ -9,6 +9,8 @@ const initialState = {
   isSuccess: false,
   isLoading: false,
   message: "",
+  likes: 0,
+  dislikes: 0,
 };
 
 // Create new answer
@@ -56,8 +58,68 @@ export const getTopAnswers = createAsyncThunk(
   "answers/getTopAnswers",
   async (_, thunkAPI) => {
     try {
+      return await answerService.getTopAnswers();
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Get answer
+export const getAnswer = createAsyncThunk(
+  "answers/getAnswer",
+  async (answerId, thunkAPI) => {
+    try {
       const token = thunkAPI.getState().auth.user.token;
-      return await answerService.getTopAnswers(token);
+      return await answerService.getAnswer(answerId, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Update answer
+export const updateAnswer = createAsyncThunk(
+  "answers/updateAnswer",
+  async (dataForUpdate, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await answerService.updateAnswer(dataForUpdate, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Remove answer
+export const removeAnswer = createAsyncThunk(
+  "questions/removeAnswer",
+  async (answerId, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await answerService.removeAnswer(answerId, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -116,11 +178,18 @@ export const answerSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => initialState,
-    setLikes: (state) => {
-      state.answer.likes = state.answer.likes + 1;
+    setLikes: (state, action) => {
+      let index = state.answers.findIndex(
+        (answer) => answer.answer_id === action.payload
+      );
+      console.log(index);
+      state.answers[index].likes = state.answers[index].likes + 1;
     },
-    setDislikes: (state) => {
-      state.answer.dislikes = state.answer.dislikes + 1;
+    setDislikes: (state, action) => {
+      let index = state.answers.findIndex(
+        (answer) => answer.answer_id === action.payload
+      );
+      state.answers[index].dislikes = state.answers[index].dislikes + 1;
     },
   },
   extraReducers: {
@@ -146,6 +215,19 @@ export const answerSlice = createSlice({
       state.answers = action.payload;
     },
     [getAllAnswers.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = action.payload;
+    },
+    [getAnswer.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [getAnswer.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.answer = action.payload;
+    },
+    [getAnswer.rejected]: (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.message = action.payload;

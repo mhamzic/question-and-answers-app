@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -35,14 +35,10 @@ const AddAnswer = (props) => {
 
   const onSubmit = (data) => {
     data.question_id = props.question_id;
-    dispatch(resetSlice());
     dispatch(createAnswer(data));
     dispatch(getAllAnswers(props.question_id));
+    dispatch(resetSlice());
   };
-
-  if (isLoading) {
-    return <Spinner />;
-  }
 
   return (
     <>

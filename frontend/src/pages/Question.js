@@ -27,11 +27,11 @@ function Question() {
     (state) => state.questions
   );
 
-  const { answers, isLoading: answerIsLoading } = useSelector(
-    (state) => state.answers
-  );
-
-  console.log(answers);
+  const {
+    answers,
+    isLoading: answerIsLoading,
+    isSuccess: answerIsSuccess,
+  } = useSelector((state) => state.answers);
 
   const { token } = useSelector((state) => state.auth.user);
   const [answerFormIsOpen, setAnswerFormIsOpen] = useState(false);
@@ -45,6 +45,7 @@ function Question() {
 
   useEffect(() => {
     if (isError) {
+      console.log(message);
       toast.error(message);
     }
 
@@ -147,9 +148,15 @@ function Question() {
       </Button>
       {answerFormIsOpen && <AddAnswer question_id={question.question_id} />}
 
-      {answers.map((answer, i) => (
-        <AnswerItem key={answer.answer_id} answer={answer} userId={userId} />
-      ))}
+      {answerIsSuccess &&
+        answers.map((answer, i) => (
+          <AnswerItem
+            key={answer.answer_id}
+            answer={answer}
+            userId={userId}
+            questionId={question.question_id}
+          />
+        ))}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import questionService from "./questionService";
 const initialState = {
   recentQuestions: [],
   hotQuestions: [],
+  userQuestions: [],
   question: {},
   isError: false,
   isSuccess: false,
@@ -39,7 +40,7 @@ export const updateQuestion = createAsyncThunk(
     try {
       const token = thunkAPI.getState().auth.user.token;
       console.log(questionData);
-      return await questionService.createQuestion(questionData, token);
+      return await questionService.updateQuestion(questionData, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -53,7 +54,7 @@ export const updateQuestion = createAsyncThunk(
   }
 );
 
-// Update question
+// Remove question
 export const removeQuestion = createAsyncThunk(
   "questions/removeQuestion",
   async (questionId, thunkAPI) => {
@@ -95,11 +96,11 @@ export const getAllQuestions = createAsyncThunk(
 
 // Get all user's questions
 export const getUserQuestions = createAsyncThunk(
-  "questions/getAll",
+  "questions/getUserQuestions",
   async (_, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await questionService.getQuestions(token);
+      return await questionService.getUserQuestions(token);
     } catch (error) {
       const message =
         (error.response &&
@@ -258,7 +259,7 @@ export const questionSlice = createSlice({
     [getUserQuestions.fulfilled]: (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      state.questions = action.payload;
+      state.userQuestions = action.payload;
     },
     [getUserQuestions.rejected]: (state, action) => {
       state.isLoading = false;

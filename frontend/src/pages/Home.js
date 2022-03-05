@@ -1,11 +1,11 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import QuestionList from "../components/question/QuestionList";
+import HomeList from "../components/HomeList";
 
 const Home = () => {
   return (
     <Container className="my-5">
-      <QuestionList />
+      <HomeList />
     </Container>
   );
 };

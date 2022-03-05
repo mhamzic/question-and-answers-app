@@ -6,19 +6,20 @@ import { Button, Form, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner/Spinner";
 import {
-  getQuestion,
+  getAnswer,
+  updateAnswer,
   reset as resetSlice,
-  updateQuestion,
-} from "../store/question/questionSlice";
+  getAllAnswers,
+} from "../store/answer/answerSlice";
 
-const EditQuestion = (props) => {
+const EditAnswer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { questionId } = useParams();
+  const { answerId } = useParams();
 
-  const { question, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.questions
+  const { answer, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.answers
   );
 
   const {
@@ -32,21 +33,19 @@ const EditQuestion = (props) => {
     if (isError) {
       toast.error(message);
     }
-
-    dispatch(getQuestion(questionId));
-  }, [dispatch, isError, message, questionId]);
+    dispatch(getAnswer(answerId));
+  }, [dispatch, isError, message, answerId]);
 
   useEffect(() => {
-    reset(question);
-  }, [isSuccess, question, reset]);
+    reset(answer);
+  }, [isSuccess, answer, reset]);
 
   const onSubmit = (data) => {
-    let dataForUpdate = { questionId: data.question_id, text: data.text };
-    alert(JSON.stringify(dataForUpdate));
-    dispatch(updateQuestion(dataForUpdate));
+    let dataForUpdate = { answerId: data.answer_id, text: data.text };
+    dispatch(updateAnswer(dataForUpdate));
     dispatch(resetSlice());
-    toast.info("Question updated.");
-    navigate("/");
+    toast.info("Answer updated.");
+    navigate(-1);
   };
 
   if (isLoading) {
@@ -55,14 +54,14 @@ const EditQuestion = (props) => {
 
   return (
     <Container className="w-50 my-5">
-      <h3>Edit your question</h3>
+      <h3>Edit answer</h3>
       <hr />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group className="mb-3">
           <Form.Control
             as="textarea"
             {...register("text", {
-              required: "Question is required.",
+              required: "Answer is required.",
             })}
             isInvalid={errors.text}
           />
@@ -82,4 +81,4 @@ const EditQuestion = (props) => {
   );
 };
 
-export default EditQuestion;
+export default EditAnswer;

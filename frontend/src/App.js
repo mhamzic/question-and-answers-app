@@ -11,7 +11,10 @@ import "./assets/css/bootstrap.min.css";
 
 import Register from "./pages/Register";
 import AddQuestion from "./pages/AddQuestion";
-import EditQuestion from './pages/EditQuestion'
+import EditQuestion from "./pages/EditQuestion";
+import EditAnswer from "./pages/EditAnswer";
+import MyQuestions from "./pages/MyQuestions";
+import MyProfile from "./pages/MyProfile";
 
 function App() {
   return (
@@ -33,6 +36,9 @@ function App() {
                 path="/editquestion/:questionId"
                 element={<EditQuestion />}
               />
+              <Route path="/editanswer/:answerId" element={<EditAnswer />} />
+              <Route path="/myquestions" element={<MyQuestions />} />
+              <Route path="/profile" element={<MyProfile />} />
             </Route>
 
             <Route

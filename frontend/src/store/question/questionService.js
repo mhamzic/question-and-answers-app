@@ -17,16 +17,14 @@ const createQuestion = async (questionData, token) => {
 
 // Update question
 const updateQuestion = async (questionData, token) => {
+  const { questionId, text } = questionData;
+  console.log(text);
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
-  const response = await axios.put(
-    API_URL + questionData.questionId,
-    questionData.text,
-    config
-  );
+  const response = await axios.put(API_URL + questionId, {text}, config);
   return response.data;
 };
 
@@ -132,6 +130,7 @@ const questionService = {
   getHotQuestions,
   setLike,
   setDislike,
+  updateQuestion,
 };
 
 export default questionService;

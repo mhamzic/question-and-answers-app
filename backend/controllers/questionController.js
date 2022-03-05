@@ -156,6 +156,7 @@ const deleteQuestion = asyncHandler(async (req, res) => {
 // @access  Private
 const updateQuestion = asyncHandler(async (req, res) => {
   const { text } = req.body;
+  console.log("update", req.body);
   // Get user using the id in the JWT
   const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
     req.user.id,
