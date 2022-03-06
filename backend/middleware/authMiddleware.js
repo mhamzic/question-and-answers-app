@@ -1,3 +1,4 @@
+const dotenv = require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const db = require("../db/index");
