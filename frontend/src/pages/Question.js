@@ -18,12 +18,11 @@ import BackButton from "../components/BackButton";
 import Spinner from "../components/Spinner/Spinner";
 import { Button } from "react-bootstrap";
 import jwt_decode from "jwt-decode";
-import axios from "axios";
 import AnswerItem from "../components/answer/AnswerItem";
 import AddAnswer from "../components/answer/AddAnswer";
 
 function Question() {
-  const { question, isLoading, isSuccess, isError, message } = useSelector(
+  const { question, isLoading, isError, message } = useSelector(
     (state) => state.questions
   );
 
@@ -79,12 +78,17 @@ function Question() {
     dispatch(setDislikes());
   };
 
-  const onDelete = () => {
-    dispatch(removeQuestion(questionId));
-    dispatch(getAllQuestions());
-    toast.info("Question removed successfully.");
-    dispatch(reset());
-    navigate("/");
+  const onDelete = async () => {
+    try {
+      dispatch(removeQuestion(questionId)).unwrap();
+      dispatch(getAllQuestions()).unwrap();
+      toast.info("Question removed successfully.");
+      dispatch(reset());
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+      toast.info("Error has occurred.");
+    }
   };
 
   return (
@@ -108,14 +112,14 @@ function Question() {
               <span className="me-4 text-success">
                 <FaThumbsUp
                   onClick={likeHandler}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", userSelect: "none" }}
                 />
                 ({question.likes})
               </span>
               <span className="me-4 text-danger">
                 <FaThumbsDown
                   onClick={dislikeHandler}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", userSelect: "none" }}
                 />
                 ({question.dislikes})
               </span>
@@ -144,7 +148,13 @@ function Question() {
       <h5>Answers</h5>
 
       <Button onClick={openAnswerForm} variant="secondary" className="my-2">
-        {!answerFormIsOpen ? "Add Answer" : "Close"}
+        {!answerFormIsOpen ? (
+          <span>
+            <FaPlus /> Add Answer
+          </span>
+        ) : (
+          "Close"
+        )}
       </Button>
       {answerFormIsOpen && <AddAnswer question_id={question.question_id} />}
 

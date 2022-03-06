@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Card, Button } from "react-bootstrap";
@@ -15,7 +15,7 @@ import {
 } from "../../store/answer/answerSlice";
 import { useNavigate } from "react-router-dom";
 
-function AnswerItem({ answer, userId, questionId }) {
+function AnswerItem({ answers, answer, userId, questionId }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -29,11 +29,15 @@ function AnswerItem({ answer, userId, questionId }) {
     dispatch(setDislikes(answer.answer_id));
   };
 
-  const onDelete = () => {
-    dispatch(removeAnswer(answer.answer_id));
-    dispatch(getAllAnswers(questionId));
-    toast.info("Answer removed successfully.");
-    // dispatch(reset());
+  const onDelete = async () => {
+    try {
+      dispatch(removeAnswer(answer.answer_id)).unwrap();
+      dispatch(getAllAnswers(questionId)).unwrap();
+      toast.info("Answer removed successfully.");
+    } catch (error) {
+      console.log(error);
+      toast.info("Error has occurred.");
+    }
   };
 
   return (
@@ -50,13 +54,16 @@ function AnswerItem({ answer, userId, questionId }) {
         <Card.Footer as="div" className="d-flex justify-content-between">
           <div>
             <span className="me-4 text-success">
-              <FaThumbsUp onClick={likeHandler} style={{ cursor: "pointer" }} />
+              <FaThumbsUp
+                onClick={likeHandler}
+                style={{ cursor: "pointer", userSelect: "none" }}
+              />
               ({answer.likes})
             </span>
             <span className="me-4 text-danger">
               <FaThumbsDown
                 onClick={dislikeHandler}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", userSelect: "none" }}
               />
               ({answer.dislikes})
             </span>

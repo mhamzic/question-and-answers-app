@@ -8,6 +8,7 @@ const initialState = {
   isError: false,
   isSuccess: false,
   isLoading: false,
+  isAdded: false,
   message: "",
   likes: 0,
   dislikes: 0,
@@ -255,5 +256,6 @@ export const answerSlice = createSlice({
   },
 });
 
-export const { reset, setLikes, setDislikes, addToAnswers } = answerSlice.actions;
+export const { reset, setLikes, setDislikes, addToAnswers } =
+  answerSlice.actions;
 export default answerSlice.reducer;
