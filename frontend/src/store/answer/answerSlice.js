@@ -195,6 +195,9 @@ export const answerSlice = createSlice({
       );
       state.answers[index].dislikes = state.answers[index].dislikes + 1;
     },
+    addToAnswers: (state, action) => {
+      state.answers.push(action.payload);
+    },
   },
   extraReducers: {
     [createAnswer.pending]: (state) => {
@@ -252,5 +255,5 @@ export const answerSlice = createSlice({
   },
 });
 
-export const { reset, setLikes, setDislikes } = answerSlice.actions;
+export const { reset, setLikes, setDislikes, addToAnswers } = answerSlice.actions;
 export default answerSlice.reducer;

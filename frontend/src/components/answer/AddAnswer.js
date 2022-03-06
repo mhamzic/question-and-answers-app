@@ -10,6 +10,7 @@ import {
   createAnswer,
   getAllAnswers,
   reset as resetSlice,
+  addToAnswers,
 } from "../../store/answer/answerSlice";
 
 const AddAnswer = (props) => {
@@ -36,7 +37,7 @@ const AddAnswer = (props) => {
   const onSubmit = (data) => {
     data.question_id = props.question_id;
     dispatch(createAnswer(data));
-    dispatch(getAllAnswers(props.question_id));
+    dispatch(addToAnswers(data));
     dispatch(resetSlice());
   };
 
