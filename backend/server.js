@@ -6,8 +6,6 @@ const { errorHandler } = require("./middleware/errorMiddleware");
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to database
-
 const app = express();
 
 app.use(express.json());
@@ -30,7 +28,7 @@ if (process.env.NODE_ENV === "production") {
   });
 } else {
   app.get("/", (req, res) => {
-    res.status(200).json({ message: "Welcome to the Support Desk API" });
+    res.status(200).json({ message: "Welcome to Question App / MOP-Task API" });
   });
 }
 
