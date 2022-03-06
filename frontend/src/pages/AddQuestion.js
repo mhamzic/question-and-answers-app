@@ -8,6 +8,7 @@ import Spinner from "../components/Spinner/Spinner";
 import BackButton from "../components/BackButton";
 import {
   createQuestion,
+  getRecentQuestions,
   reset as resetSlice,
 } from "../store/question/questionSlice";
 
@@ -24,6 +25,11 @@ const AddQuestion = (props) => {
       toast.error(message);
     }
 
+    if (isSuccess) {
+      dispatch(resetSlice());
+      navigate("/");
+    }
+
     dispatch(resetSlice());
   }, [dispatch, isError, isSuccess, navigate, message]);
 
@@ -35,9 +41,8 @@ const AddQuestion = (props) => {
 
   const onSubmit = (data) => {
     dispatch(createQuestion(data));
-    dispatch(resetSlice());
+    // dispatch(getRecentQuestions());
     toast.info("Question added.");
-    navigate("/");
   };
 
   if (isLoading) {

@@ -4,7 +4,7 @@ import { Form, Button, Row, Col } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getUser } from "../../store/user/userSlice";
+import { editUser, getUser, reset } from "../../store/user/userSlice";
 
 const AccountDetails = () => {
   const dispatch = useDispatch();
@@ -35,7 +35,11 @@ const AccountDetails = () => {
   }, [isSuccess, currentUser]);
 
   const onSubmit = async (data) => {
-    alert(JSON.stringify(data));
+    dispatch(editUser(data));
+    if (isSuccess) {
+      dispatch(getUser());
+      // dispatch(reset());
+    }
   };
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>

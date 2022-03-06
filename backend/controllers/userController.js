@@ -93,6 +93,63 @@ const getMe = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 });
 
+// @desc    Edit current user
+// @route   /api/users/me
+// @access  Private
+const editUser = asyncHandler(async (req, res) => {
+  // Get user using the id in the JWT
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
+    req.user.id,
+  ]);
+  const user = uResult.rows[0];
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  const updatedUser = await db.query(
+    "UPDATE users SET name = $1, email = $2 WHERE user_id=$3 returning *",
+    [req.body.name, req.body.email, req.user.id]
+  );
+
+  res.status(200).json(updatedUser.rows[0]);
+});
+
+// @desc    Change current user
+// @route   /api/users/me/password
+// @access  Private
+const changePassword = asyncHandler(async (req, res) => {
+  // Get user using the id in the JWT
+  const uResult = await db.query("SELECT * FROM users WHERE user_id = $1", [
+    req.user.id,
+  ]);
+  const user = uResult.rows[0];
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  let isValidPassword = await bcrypt.compare(
+    req.body.oldpassword,
+    user.password
+  );
+
+  if (!isValidPassword) {
+    res.status(401);
+    throw new Error("Invalid credentials, check you password.");
+  }
+
+  let hashedPassword = await bcrypt.hash(req.body.newpassword, 10);
+
+  const updatedUser = await db.query(
+    "UPDATE users SET password=$1 WHERE user_id=$2",
+    [hashedPassword, req.user.id]
+  );
+
+  res.status(200).json({ status: "success" });
+});
+
 // Generate token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -104,4 +161,6 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
+  editUser,
+  changePassword,
 };

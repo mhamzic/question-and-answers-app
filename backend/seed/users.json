@@ -1,26 +1,26 @@
 [
     {
-      "username": "ross",
+      "name": "Ross Geller",
       "password": "password", 
       "email":"ross@test.com"
     },
     {
-        "username": "chandler",
+        "name": "Chandler Bing",
         "password": "password", 
         "email":"chandler@test.com"
       },
       {
-        "username": "rachel",
+        "name": "Rachel Green",
         "password": "password", 
         "email":"rachel@test.com"
       },
       {
-        "username": "monica",
+        "name": "Monica Geller",
         "password": "password", 
         "email":"monica@test.com"
       },
       {
-        "username": "joey",
+        "name": "Joey Tribianni",
         "password": "password", 
         "email":"joey@test.com"
       }

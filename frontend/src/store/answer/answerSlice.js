@@ -177,7 +177,12 @@ export const answerSlice = createSlice({
   name: "answer",
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: (state) => {
+      state.isError = false;
+      state.isSuccess = false;
+      state.isLoading = false;
+      state.message = "";
+    },
     setLikes: (state, action) => {
       let index = state.answers.findIndex(
         (answer) => answer.answer_id === action.payload

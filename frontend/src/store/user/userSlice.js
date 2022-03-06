@@ -12,7 +12,7 @@ const initialState = {
   message: "",
 };
 
-export const getUser = createAsyncThunk("auth/getUser", async (_, thunkAPI) => {
+export const getUser = createAsyncThunk("user/getUser", async (_, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user.token;
     return await userService.getUser(token);
@@ -25,6 +25,44 @@ export const getUser = createAsyncThunk("auth/getUser", async (_, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+
+export const editUser = createAsyncThunk(
+  "user/editUser",
+  async (userData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await userService.editUser(userData, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const changePassword = createAsyncThunk(
+  "user/changePassword",
+  async (userData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await userService.changePassword(userData, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 export const userSlice = createSlice({
   name: "user",

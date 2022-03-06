@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Container, Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { authActions, changePassword } from "../../store/auth-slice";
-import { alertActions } from "../../store/alert-slice";
+import { Button, Form, Container } from "react-bootstrap";
+import { toast } from "react-toastify";
+import Spinner from "../Spinner/Spinner";
+import { changePassword } from "../../store/user/userSlice";
+import { logout, reset } from "../../store/auth/authSlice";
 
 const ChangePassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
 
   const {
     register,
@@ -21,13 +22,11 @@ const ChangePassword = () => {
   const passwordMain = watch("newpassword", "");
 
   const onSubmit = async (data) => {
-    try {
-      await dispatch(changePassword({ token: token, userData: data })).unwrap();
-      dispatch(authActions.logOutHandler());
-      navigate("/login");
-    } catch (error) {
-      dispatch(alertActions.showAlert({ text: error.error, type: "error" }));
-    }
+    dispatch(changePassword(data));
+    toast.info("Password successfully changed. Please login again.");
+    dispatch(logout());
+    dispatch(reset());
+    navigate("/login");
   };
 
   return (

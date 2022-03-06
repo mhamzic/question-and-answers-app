@@ -46,7 +46,7 @@ const seed = async () => {
         created_on TIMESTAMP NOT NULL DEFAULT Now(), 
         PRIMARY KEY(answer_id),
         FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE, 
-        FOREIGN KEY(question_id) REFERENCES questions(question_id)
+        FOREIGN KEY(question_id) REFERENCES questions(question_id) ON DELETE CASCADE
     );`);
   } catch (error) {
     console.log(error);
@@ -57,7 +57,7 @@ const seed = async () => {
       let hashedPassword = await bcrypt.hash(user.password, 10);
       await db.query(
         "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) returning *",
-        [user.username, user.email, hashedPassword]
+        [user.name, user.email, hashedPassword]
       );
     }
 

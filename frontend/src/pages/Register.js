@@ -24,7 +24,7 @@ const Signup = () => {
     }
     // Redirect when logged in
     if (isSuccess || user) {
-      navigate("/home");
+      navigate("/");
     }
     dispatch(reset());
   }, [isError, isSuccess, user, message, navigate, dispatch]);

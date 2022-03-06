@@ -16,8 +16,6 @@ const {
 const { protect } = require("../middleware/authMiddleware");
 
 // Re-route into note router
-const answerRouter = require("./answerRoutes");
-router.use("/:questionId/notes", answerRouter);
 
 router.route("/").get(protect, getQuestions).post(protect, createQuestion);
 

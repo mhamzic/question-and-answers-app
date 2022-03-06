@@ -43,9 +43,11 @@ const MyQuestions = (props) => {
         <QuestionItem key={question.question_id} question={question} />
       ))}
       <div className="d-grid gap-2">
-        <Button variant="info" onClick={loadMore} disabled={!isLoadMore}>
-          Load More
-        </Button>
+        {userQuestions.length > 6 && (
+          <Button variant="info" onClick={loadMore} disabled={!isLoadMore}>
+            Load More
+          </Button>
+        )}
       </div>
     </Container>
   );
