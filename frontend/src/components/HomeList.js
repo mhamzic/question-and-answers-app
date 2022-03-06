@@ -52,7 +52,7 @@ const QuestionList = (props) => {
           <QuestionItem key={question.question_id} question={question} />
         ))}
         <div className="d-grid gap-2">
-          {recentQuestions.length > 5 && (
+          {recentQuestions.length > 4 && (
             <Button variant="info" onClick={loadMore} disabled={!isLoadMore}>
               Load More
             </Button>
