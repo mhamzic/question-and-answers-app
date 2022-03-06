@@ -24,7 +24,7 @@ function Header() {
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto mx-2 my-lg-0">
+            <Nav className="ms-auto mx-2">
               {!user && (
                 <>
                   <Nav.Link as={NavLink} to="/register">
@@ -57,18 +57,18 @@ function Header() {
                   </Dropdown>
                 </>
               )}
-              {user && (
+            </Nav>
+            {user && (
+              <div>
                 <Button
                   as={Link}
                   to="/addquestion"
                   variant="success"
-                  // size="sm"
-                  className="mx-4"
                 >
                   <FaPlus /> Add Question
                 </Button>
-              )}
-            </Nav>
+              </div>
+            )}
           </Navbar.Collapse>
         </Container>
       </Navbar>

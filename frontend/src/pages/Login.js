@@ -44,7 +44,7 @@ const Login = (props) => {
   }
 
   return (
-    <Container className="w-50 my-5">
+    <Container style={{ maxWidth: "500px" }} className="my-5">
       <h3>
         <FaSignInAlt /> User login
       </h3>

@@ -48,7 +48,7 @@ const Signup = () => {
 
   return (
     <Container className="my-5 pb-5 d-flex justify-content-center">
-      <div className="w-50">
+      <div style={{ maxWidth: "500px" }}>
         <h3>
           <FaUser /> Register
         </h3>
