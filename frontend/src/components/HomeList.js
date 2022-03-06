@@ -52,9 +52,11 @@ const QuestionList = (props) => {
           <QuestionItem key={question.question_id} question={question} />
         ))}
         <div className="d-grid gap-2">
-          <Button variant="info" onClick={loadMore} disabled={!isLoadMore}>
-            Load More
-          </Button>
+          {recentQuestions.length > 5 && (
+            <Button variant="info" onClick={loadMore} disabled={!isLoadMore}>
+              Load More
+            </Button>
+          )}
         </div>
       </Col>
       <Col sm={12} md={5}>
