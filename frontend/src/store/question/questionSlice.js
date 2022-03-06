@@ -39,7 +39,6 @@ export const updateQuestion = createAsyncThunk(
   async (questionData, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      console.log(questionData);
       return await questionService.updateQuestion(questionData, token);
     } catch (error) {
       const message =

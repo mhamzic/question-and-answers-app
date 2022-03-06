@@ -6,7 +6,6 @@ const db = require("../db/index");
 // @access  Private
 const getQuestions = asyncHandler(async (req, res) => {
   const { offset } = req.body || 0;
-  console.log(offset);
 
   const recentResult = await db.query(
     "SELECT * FROM questions ORDER BY created_on DESC OFFSET $1 FETCH FIRST 5 ROW ONLY",
@@ -68,7 +67,6 @@ const getQuestion = asyncHandler(async (req, res) => {
   );
 
   const question = qResult.rows[0];
-  console.log(question);
 
   if (!question) {
     res.status(404);
@@ -266,7 +264,6 @@ const setDislike = asyncHandler(async (req, res) => {
 // @access  Private
 const getRecentQuestions = asyncHandler(async (req, res) => {
   const { offset } = req.body || 0;
-  console.log(offset);
 
   const qResult = await db.query(
     "SELECT * FROM questions ORDER BY created_on DESC OFFSET $1 FETCH FIRST 5 ROW ONLY",

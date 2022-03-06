@@ -42,7 +42,6 @@ const EditQuestion = (props) => {
 
   const onSubmit = (data) => {
     let dataForUpdate = { questionId: data.question_id, text: data.text };
-    alert(JSON.stringify(dataForUpdate));
     dispatch(updateQuestion(dataForUpdate));
     dispatch(resetSlice());
     toast.info("Question updated.");

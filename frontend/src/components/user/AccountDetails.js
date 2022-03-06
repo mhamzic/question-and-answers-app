@@ -38,7 +38,6 @@ const AccountDetails = () => {
     dispatch(editUser(data));
     if (isSuccess) {
       dispatch(getUser());
-      // dispatch(reset());
     }
   };
   return (

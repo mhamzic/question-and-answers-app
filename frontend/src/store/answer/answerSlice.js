@@ -187,7 +187,6 @@ export const answerSlice = createSlice({
       let index = state.answers.findIndex(
         (answer) => answer.answer_id === action.payload
       );
-      console.log(index);
       state.answers[index].likes = state.answers[index].likes + 1;
     },
     setDislikes: (state, action) => {

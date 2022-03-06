@@ -16,7 +16,6 @@ const MyQuestions = (props) => {
 
   useEffect(() => {
     return () => {
-      console.log(isSuccess);
       if (isSuccess) {
         dispatch(reset());
       }

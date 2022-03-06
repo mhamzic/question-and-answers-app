@@ -39,7 +39,6 @@ const Signup = () => {
   const passwordMain = watch("password", "");
 
   const onSubmit = async (data) => {
-    alert(JSON.stringify(data));
     dispatch(registerUser(data));
   };
 
