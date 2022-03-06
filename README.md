@@ -2,6 +2,8 @@
 
 App is simple PERN stack app which allows registration, asking questions and sending answers.Users can also add rating (likes or dislikes to questions or answers). App support full CRUD on questions and answers, adding users and change users profile and password.
 
+Check live version: https://mop-task-qa.herokuapp.com/
+
 ## Technologies
 
 - Postgres SQL
